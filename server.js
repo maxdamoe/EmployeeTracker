@@ -128,12 +128,12 @@ async function newDepartment() {
         dept_name: deptAnswer.deptName
     });
 
-    console.log(`${deptAnswer.deptName} was successfully added to departments!`)
+    console.log(`${deptAnswer.deptName} was added to departments`)
     firstQuestion();
 };
 
 async function addRole() {
-    let deptChoices = await connection.promise().query(`SELECT * FROM department`)
+    let deptChoices = await connection.promise().query(`SELECT * FROM Department`)
 
     // console.log(deptChoices[0]);
 
@@ -149,29 +149,29 @@ async function addRole() {
         {
             name: "title",
             type: "input",
-            message: "Please enter the name of the new role"
+            message: "Please enter name of new role"
         },
         {
             name: "salary",
             type: "input",
-            message: "Please enter the salary for this role"
+            message: "Please enter salary for this role"
         },
         {
-            name: "department",
+            name: "department_id",
             type: "list",
             choices: deptArray  // user selects from array of depts 
 
         }
 
     ]);
-    const deptId = await connection.promise().query('SELECT id FROM department WHERE dept_name = ?', userRole.department);
+    const deptId = await connection.promise().query('SELECT department_id FROM _Role WHERE department_id = ?', userRole.department);
     // console.log(deptId[0]);
     // console.log(deptId[0][0].id);
 
-    connection.query(`INSERT INTO e_role SET ?`, {
+    connection.query(`INSERT INTO _Role SET ?`, {
         title: userRole.title,                                          // title on right is not part of /same as title on left 
         salary: userRole.salary,
-        dept_id: deptId[0][0].id
+        department_id: deptId[0][0].id
 
     });
     // console.log("test", roleResponse);
@@ -181,7 +181,7 @@ async function addRole() {
 };
 
 async function addEmployee() {
-    let employeeRoleChoices = await connection.promise().query(`SELECT * FROM e_role`)
+    let employeeRoleChoices = await connection.promise().query(`SELECT * FROM _Role`)
     // console.log(employeeRoleChoices[0])
     let roleArray = [];
     for (let i = 0; i < employeeRoleChoices[0].length; i++) {
@@ -214,14 +214,9 @@ async function addEmployee() {
             choices: roleArray
 
         },
-        {
-            name: "managerId",
-            type: "input",
-            message: "Please enter the id of the manager for this employee"
-        }
     ]);
     // console.log(newEmployee);
-    const employeeRoleId = await connection.promise().query('SELECT id FROM e_role WHERE title = ?', newEmployee.employee);
+    const employeeRoleId = await connection.promise().query('SELECT department_id FROM _Role WHERE title = ?', newEmployee.employee);
     // console.log("=========")
     // console.log(newEmployee.employee);
     // console.log(employeeRoleId[0][0].id);
@@ -230,7 +225,7 @@ async function addEmployee() {
         first_name: newEmployee.firstName,
         last_name: newEmployee.lastName,
         role_id: employeeRoleId[0][0].id,
-        manager_id: newEmployee.managerId
+
     })
     console.log(`${newEmployee.firstName} + ${newEmployee.lastName} was successfully added to Employees!`)
     firstQuestion();
@@ -241,7 +236,7 @@ async function updateRole() {
     let employeeChoices = await connection.promise().query(`SELECT * FROM employee`);
     let employeeArray = [];
     console.log(employeeArray)
-    let roleChoices = await connection.promise().query(`SELECT * FROM e_role`);
+    let roleChoices = await connection.promise().query(`SELECT * FROM _Role`);
     let roleArray = [];
     for (let i = 0; i < employeeChoices[0].length; i++) {
         employeeArray.push(employeeChoices[0][i].last_name)
