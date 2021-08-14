@@ -84,7 +84,7 @@ function viewDepartments() {
 //user can view roles
 function viewRoles() {
 
-    db.query(`SELECT * FROM Role`, (err, rows) => {
+    db.query(`SELECT * FROM _Role`, (err, rows) => {
         if (err) {
             throw err;
         } else {

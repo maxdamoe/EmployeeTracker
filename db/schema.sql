@@ -4,7 +4,7 @@ CREATE TABLE Department (
   name VARCHAR(30) NOT NULL,
 );
 
-CREATE TABLE Role (
+CREATE TABLE _Role (
   id INTEGER PRIMARY KEY,
   title VARCHAR(30),
   salary DECIMAL,
@@ -12,9 +12,9 @@ CREATE TABLE Role (
 );
 
 CREATE TABLE Employee (
- id INTEGER PRIMARY KEY,
+
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INTEGER,
-  manager_id INTEGER,
+  
 );
