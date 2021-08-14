@@ -6,7 +6,6 @@ const connection = require("./db/connection");
 
 
 
-// would like to have this in connection.js but code breaks when removed, even when firstQuestion(); is left here. 
 connection.connect((err) => {
     if (err) {
         throw err
@@ -14,9 +13,7 @@ connection.connect((err) => {
     } firstQuestion();
 });
 
-// function to begin inquirer prompt questions, use async to make promise
-//try this block of code, catch any errors
-//use switch to evaluate user answer from OptionsList. If the case matches, execute method then break to end case clause. Move to next
+
 const firstQuestion = async () => {
     try {
         let answer = await inquirer.prompt({
@@ -68,7 +65,6 @@ const firstQuestion = async () => {
 
 
 
-//user can view departments
 function viewDepartments() {
     db.query(`SELECT * FROM Department`, (err, rows) => {
         if (err) {
@@ -81,7 +77,7 @@ function viewDepartments() {
     });
 };
 
-//user can view roles
+
 function viewRoles() {
 
     db.query(`SELECT * FROM _Role`, (err, rows) => {
@@ -95,7 +91,7 @@ function viewRoles() {
     });
 };
 
-// user can view employees 
+ 
 function viewEmployees() {
     db.query(`SELECT * FROM Employee`, (err, rows) => {
         if (err) {
@@ -110,11 +106,7 @@ function viewEmployees() {
 
 
 
-// if user selects add department, they are asked to enter input for new department
-//once information is entered a message appears saying it was added successfully
-// then user is taken back to 'home menu' using firstQuestion(); 
-// when user then clicks on 'View all Departments" from main menu they can see it was added successfully. 
-// use similar process for adding role, employee, and updating employee 
+
 async function newDepartment() {
     let deptAnswer = await inquirer.prompt([
         {
@@ -135,16 +127,15 @@ async function newDepartment() {
 async function addRole() {
     let deptChoices = await connection.promise().query(`SELECT * FROM Department`)
 
-    // console.log(deptChoices[0]);
+   
 
     let deptArray = [];
-    for (let i = 0; i < deptChoices[0].length; i++) {   //deptChoices is massive parent array in console 
-        deptArray.push(deptChoices[0][i].dept_name)   //previously departArray.push(deptChoices[0][i].deptName)
-        // console.log(deptArray)
+    for (let i = 0; i < deptChoices[0].length; i++) {  
+        deptArray.push(deptChoices[0][i].dept_name)   
+       
     }
 
-    // console.log(" dept array " + JSON.stringify(deptArray))
-    // let department = connection.query(`SELECT * FROM department`)
+   
     let userRole = await inquirer.prompt([
         {
             name: "title",
@@ -159,43 +150,35 @@ async function addRole() {
         {
             name: "department_id",
             type: "list",
-            choices: deptArray  // user selects from array of depts 
+            choices: deptArray 
 
         }
 
     ]);
     const deptId = await connection.promise().query('SELECT department_id FROM _Role WHERE department_id = ?', userRole.department);
-    // console.log(deptId[0]);
-    // console.log(deptId[0][0].id);
+
 
     connection.query(`INSERT INTO _Role SET ?`, {
-        title: userRole.title,                                          // title on right is not part of /same as title on left 
+        title: userRole.title,                                        
         salary: userRole.salary,
         department_id: deptId[0][0].id
 
     });
-    // console.log("test", roleResponse);
+   
     console.log(`${userRole.title} was successfully added to Roles!`)
-    // console.log(roleResponse)
+
     firstQuestion();
 };
 
 async function addEmployee() {
     let employeeRoleChoices = await connection.promise().query(`SELECT * FROM _Role`)
-    // console.log(employeeRoleChoices[0])
+
     let roleArray = [];
     for (let i = 0; i < employeeRoleChoices[0].length; i++) {
         roleArray.push(employeeRoleChoices[0][i].title)
-        // console.log(roleArray);
+        
     }
 
-    // console.log(" employee array " + JSON.stringify(roleArray))
-
-    // when user selects add employee, they are prompted to enter first_name, last_name, role, and manager. 
-    //once user enters all of the above, a message appears saying it was successfully added. 
-    //user is returned to 'home screen' via firstquestion(); 
-    // when user clicks view all employees, the new employee is there
-    //the employee role id references primary key from e_role. the manager id references any other employee  
     let newEmployee = await inquirer.prompt([
         {
             name: "firstName",
@@ -215,11 +198,9 @@ async function addEmployee() {
 
         },
     ]);
-    // console.log(newEmployee);
+  
     const employeeRoleId = await connection.promise().query('SELECT department_id FROM _Role WHERE title = ?', newEmployee.employee);
-    // console.log("=========")
-    // console.log(newEmployee.employee);
-    // console.log(employeeRoleId[0][0].id);
+   
     await connection.promise().query(`INSERT INTO employee SET ? `, {
 
         first_name: newEmployee.firstName,
